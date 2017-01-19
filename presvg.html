@@ -1,0 +1,70 @@
+<html>
+  <head></head>
+  <body>
+
+  <style>
+  .thumb {
+    height: 75px;
+    border: 1px solid #000;
+    margin: 10px 5px 0 0;
+  }
+  </style>
+
+  <input type="file" id="loader" name="loader" />
+  <button onclick="next()">next</button>
+  <output id="preSvg"></output>
+
+  <script>
+  var layers = [];
+  var currentLayerIndex;
+
+  function setupPresentation () {
+    layers = document.querySelectorAll('g[inkscape\\:groupmode=layer]')
+    console.log(layers)
+    // TODO exclude all non-slide layers
+    layers.forEach(function(layer){
+      //hide all layers
+      layer.style.display = 'none';
+    })
+    //set first layer as currentLayer
+    currentLayerIndex = 0;
+    //show currentLayer
+    layers[currentLayerIndex].style.display = 'inline'
+  }
+
+  function handleFileSelect(evt) {
+    var file = evt.target.files[0]; // FileList object
+
+    // Only process image files.
+    if (!file.type.match('image.*')) {
+      console.error('only accept image files'); return;
+    }
+
+    var reader = new FileReader();
+
+    // Closure to capture the file information.
+    reader.onload = (function(theFile) {
+      return function(event) {
+        document.getElementById('preSvg').innerHTML = event.target.result;
+        setupPresentation();
+      };
+    })(file);
+
+    // Read in the image file as plain text.
+    reader.readAsText(file);
+  }
+
+  document.getElementById('loader').addEventListener('change', handleFileSelect, false);
+
+  function next () {
+    //hide currentLayer
+    layers[currentLayerIndex].style.display = 'none'
+    //get next layer
+    layers.length - 1 == currentLayerIndex ? currentLayerIndex = 0 : currentLayerIndex++
+    //show new currentLayer
+    layers[currentLayerIndex].style.display = 'inline'
+  }
+  </script>
+
+  </body>
+</html>
