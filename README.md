@@ -1,5 +1,5 @@
 # preSvg
-presentational vector graphics
+presentationable vector graphics created with inkscape
 
 ## how to
 
