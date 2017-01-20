@@ -3,16 +3,18 @@
   <body>
 
   <style>
-  .thumb {
-    height: 75px;
-    border: 1px solid #000;
-    margin: 10px 5px 0 0;
+  .center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
   </style>
 
   <input type="file" id="loader" name="loader" />
+  <button onclick="back()">back</button>
   <button onclick="next()">next</button>
-  <output id="preSvg"></output>
+  <output id="preSvg" class="center"></output>
 
   <script>
   var layers = [];
