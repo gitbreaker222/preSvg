@@ -19,6 +19,11 @@
   var currentLayerIndex;
 
   function setupPresentation () {
+    //set background color
+    var bodyNode = document.querySelector('body')
+    var pageSettingsNode = document.querySelector('[pagecolor]')
+    bodyNode.style.backgroundColor = pageSettingsNode.getAttribute('pagecolor')
+    
     layers = document.querySelectorAll('g[inkscape\\:groupmode=layer]')
     console.log(layers)
     // TODO exclude all non-slide layers
