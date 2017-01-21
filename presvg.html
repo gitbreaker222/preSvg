@@ -71,6 +71,23 @@
       // Read in the image file as plain text.
       reader.readAsText(file);
     }
+    function handleKeyEvent (event) {
+      switch (event.key) {
+        case 'ArrowLeft':
+          prev()
+          break;
+        case 'ArrowUp':
+          prev()
+          break;
+        case 'ArrowRight':
+          next()
+          break;
+        case 'ArrowDown':
+          next()
+          break;
+        default:
+      }
+    }
 
     // CONTROLLER FUNCTIONS
     var setupPresentation = function () {
@@ -97,7 +114,8 @@
     }
 
     // INIT
-    document.getElementById('loader').addEventListener('change', handleFileSelect, false);
+    document.getElementById('loader').addEventListener('change', handleFileSelect, false)
+    document.onkeydown = handleKeyEvent
     if (document.querySelector('output svg')) {
       setupPresentation()
     }
