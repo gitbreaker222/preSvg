@@ -9,11 +9,16 @@
       left: 50%;
       transform: translate(-50%, -50%);
     }
+    #layerName {
+      position: fixed;
+      right: 1rem;
+    }
     </style>
 
     <input type="file" id="loader" name="loader" />
     <button onclick="prev()">back</button>
     <button onclick="next()">next</button>
+    <span id="layerName"></span>
     <output id="preSvg" class="center"></output>
 
     <script>
@@ -39,9 +44,10 @@
             currentLayerIndex == 0 ? currentLayerIndex = layers.length - 1 : currentLayerIndex--
             break;
           default:
-
         }
       }
+      var name = layers[currentLayerIndex].attributes['inkscape:label'].value;
+      document.querySelector('#layerName').innerHTML = name
     }
     function setBackgroundColor () {
       var bodyNode = document.querySelector('body')
@@ -110,7 +116,7 @@
         layer.style.display = 'none';
       })
       //set first layer as currentLayer
-      currentLayerIndex = 0;
+      setCurrentLayer(0);
       showCurrentLayer()
     }
     var prev = function () {
