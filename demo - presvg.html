@@ -10,11 +10,32 @@
       left: 50%;
       transform: translate(-50%, -50%);
     }
+    nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 0.5rem;
+      display: flex;
+      flex-flow: row wrap;
+      justify-content: space-around;
+      background-color: rgba(0,0,0,0.1);
+    }
+    nav button{
+      font-size: 1em
+    }
+    #layerName{
+      width: 8rem;
+    }
     </style>
-
-    <input type="file" id="loader" name="loader">
-    <button onclick="prev()">back</button>
-    <button onclick="next()">next</button>
+    <nav>
+      <button onclick="prev()">back</button>
+      <button onclick="next()">next</button>
+      <span id="layerName">welcome</span>
+      <div name="slideCounter">
+        <span id="currentLayerIndex">1</span>/<span id="slideCount">3</span>
+      </div>
+    </nav>
     <output id="preSvg" class="center"><!--?xml version="1.0" encoding="UTF-8" standalone="no"?-->
 <svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" version="1.1" id="svg2" viewBox="0 0 128 127.99999" height="36.124443mm" width="36.124443mm" inkscape:version="0.91 r13725" sodipodi:docname="Logo RL.svg">
   <sodipodi:namedview pagecolor="#e9dcd2" bordercolor="#666666" borderopacity="1" objecttolerance="10" gridtolerance="10" guidetolerance="10" inkscape:pageopacity="0" inkscape:pageshadow="2" inkscape:window-width="1406" inkscape:window-height="993" id="namedview7" showgrid="false" inkscape:zoom="1.8437501" inkscape:cx="65.084743" inkscape:cy="63.999998" inkscape:window-x="0" inkscape:window-y="27" inkscape:window-maximized="0" inkscape:current-layer="layer4"></sodipodi:namedview>
@@ -28,7 +49,7 @@
       </cc:work>
     </rdf:rdf>
   </metadata>
-  <g inkscape:groupmode="layer" id="layer2" inkscape:label="welcome" style="display: none;">
+  <g inkscape:groupmode="layer" id="layer2" inkscape:label="welcome" style="display: inline;">
     <g transform="translate(-56.087903,-844.86213)" id="layer1">
       <path d="m 119.3948,862.17766 1.89448,0 34.54319,38.45871 -35.5662,-36.77713 -29.856629,25.05526 z m -23.249408,6.60112 1.640699,-0.94725 49.144589,16.03462 -49.189792,-14.06684 -13.328951,36.62679 z m -16.83402,17.3414 0.947254,-1.64068 50.577784,-10.6859 -49.633009,12.41265 6.77017,38.38421 z m -5.907976,23.43512 0,-1.8945 38.458704,-34.54315 -36.777133,35.56618 25.055243,29.85661 z m 6.601107,23.24941 -0.947259,-1.64068 16.034614,-49.14462 -14.066824,49.18978 36.626796,13.32897 z m 17.341407,16.834 -1.640681,-0.94726 -10.685902,-50.57776 12.412668,49.63301 38.384195,-6.77017 z m 23.43514,5.90798 -1.89452,0 -34.543152,-38.45869 35.566182,36.77713 29.85661,-25.05526 z m 23.24939,-6.6011 -1.64068,0.94725 -49.144617,-16.03462 49.189777,14.06684 13.32897,-36.6268 z m 16.83402,-17.34142 -0.94726,1.6407 -50.57778,10.6859 49.63301,-12.41265 -6.77019,-38.38421 z m 5.90796,-23.43512 0,1.8945 -38.45869,34.54317 36.77713,-35.56618 -25.05524,-29.85663 z m -6.60111,-23.24939 0.94728,1.64068 -16.03466,49.14461 14.06684,-49.18977 -36.62678,-13.32897 z m -17.34141,-16.83402 1.6407,0.94726 10.6859,50.57778 -12.41265,-49.63301 -38.38423,6.77017 z m -34.36509,19.64138 -5.99686,31.02497 0.52112,0.10548 8.93296,-30.46247 -3.45721,-0.66804 z m 23.3749,4.23513 -5.99686,31.02498 0.45862,0.16798 8.99545,-30.52497 -3.4572,-0.66804 z m -18.6334,14.94461 -2.82001,13.22284 0.63229,0.10904 5.6325,-12.59785 z m 7.73114,1.23221 -2.82002,13.22284 0.5698,0.0465 5.69501,-12.53535 z m 13.32561,8.40156 -2.82001,13.22285 0.5698,0.23402 5.69501,-12.72285 z" style="opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" id="path5093" inkscape:connector-curvature="0"></path>
     </g>
@@ -38,7 +59,7 @@
       <path inkscape:connector-curvature="0" d="m 119.3948,862.17766 1.89448,0 34.54319,38.45871 -35.5662,-36.77713 -29.856629,25.05526 z m -23.249408,6.60112 1.640699,-0.94725 49.144589,16.03462 -49.189792,-14.06684 -13.328951,36.62679 z m -16.83402,17.3414 0.947254,-1.64068 50.577784,-10.6859 -49.633009,12.41265 6.77017,38.38421 z m -5.907976,23.43512 0,-1.8945 38.458704,-34.54315 -36.777133,35.56618 25.055243,29.85661 z m 6.601107,23.24941 -0.947259,-1.64068 16.034614,-49.14462 -14.066824,49.18978 36.626796,13.32897 z m 17.341407,16.834 -1.640681,-0.94726 -10.685902,-50.57776 12.412668,49.63301 38.384195,-6.77017 z m 23.43514,5.90798 -1.89452,0 -34.543152,-38.45869 35.566182,36.77713 29.85661,-25.05526 z m 23.24939,-6.6011 -1.64068,0.94725 -49.144617,-16.03462 49.189777,14.06684 13.32897,-36.6268 z m 16.83402,-17.34142 -0.94726,1.6407 -50.57778,10.6859 49.63301,-12.41265 -6.77019,-38.38421 z m 5.90796,-23.43512 0,1.8945 -38.45869,34.54317 36.77713,-35.56618 -25.05524,-29.85663 z m -6.60111,-23.24939 0.94728,1.64068 -16.03466,49.14461 14.06684,-49.18977 -36.62678,-13.32897 z m -17.34141,-16.83402 1.6407,0.94726 10.6859,50.57778 -12.41265,-49.63301 -38.38423,6.77017 z m -34.36509,19.64138 -5.99686,31.02497 0.52112,0.10548 8.93296,-30.46247 -3.45721,-0.66804 z m 23.3749,4.23513 -5.99686,31.02498 0.45862,0.16798 8.99545,-30.52497 -3.4572,-0.66804 z m -18.6334,14.94461 -2.82001,13.22284 0.63229,0.10904 5.6325,-12.59785 z m 7.73114,1.23221 -2.82002,13.22284 0.5698,0.0465 5.69501,-12.53535 z m 13.32561,8.40156 -2.82001,13.22285 0.5698,0.23402 5.69501,-12.72285 z" style="opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" id="path5093-56"></path>
     </g>
   </g>
-  <g inkscape:groupmode="layer" id="layer4" inkscape:label="preSvg" style="display: inline;">
+  <g inkscape:groupmode="layer" id="layer4" inkscape:label="preSvg" style="display: none;">
     <g transform="matrix(0.8660254,0.5,-0.5,0.8660254,414.43191,-783.14164)" id="layer1-7">
       <path inkscape:connector-curvature="0" d="m 119.3948,862.17766 1.89448,0 34.54319,38.45871 -35.5662,-36.77713 -29.856629,25.05526 z m -23.249408,6.60112 1.640699,-0.94725 49.144589,16.03462 -49.189792,-14.06684 -13.328951,36.62679 z m -16.83402,17.3414 0.947254,-1.64068 50.577784,-10.6859 -49.633009,12.41265 6.77017,38.38421 z m -5.907976,23.43512 0,-1.8945 38.458704,-34.54315 -36.777133,35.56618 25.055243,29.85661 z m 6.601107,23.24941 -0.947259,-1.64068 16.034614,-49.14462 -14.066824,49.18978 36.626796,13.32897 z m 17.341407,16.834 -1.640681,-0.94726 -10.685902,-50.57776 12.412668,49.63301 38.384195,-6.77017 z m 23.43514,5.90798 -1.89452,0 -34.543152,-38.45869 35.566182,36.77713 29.85661,-25.05526 z m 23.24939,-6.6011 -1.64068,0.94725 -49.144617,-16.03462 49.189777,14.06684 13.32897,-36.6268 z m 16.83402,-17.34142 -0.94726,1.6407 -50.57778,10.6859 49.63301,-12.41265 -6.77019,-38.38421 z m 5.90796,-23.43512 0,1.8945 -38.45869,34.54317 36.77713,-35.56618 -25.05524,-29.85663 z m -6.60111,-23.24939 0.94728,1.64068 -16.03466,49.14461 14.06684,-49.18977 -36.62678,-13.32897 z m -17.34141,-16.83402 1.6407,0.94726 10.6859,50.57778 -12.41265,-49.63301 -38.38423,6.77017 z m -34.36509,19.64138 -5.99686,31.02497 0.52112,0.10548 8.93296,-30.46247 -3.45721,-0.66804 z m 23.3749,4.23513 -5.99686,31.02498 0.45862,0.16798 8.99545,-30.52497 -3.4572,-0.66804 z m -18.6334,14.94461 -2.82001,13.22284 0.63229,0.10904 5.6325,-12.59785 z m 7.73114,1.23221 -2.82002,13.22284 0.5698,0.0465 5.69501,-12.53535 z m 13.32561,8.40156 -2.82001,13.22285 0.5698,0.23402 5.69501,-12.72285 z" style="opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" id="path5093-5"></path>
     </g>
@@ -49,6 +70,7 @@
     <script>
     var layers = [];
     var currentLayerIndex;
+    var slideCount;
 
     // SERVICE FUNCTIONS
     function hideCurrentLayer () {
@@ -69,14 +91,28 @@
             currentLayerIndex == 0 ? currentLayerIndex = layers.length - 1 : currentLayerIndex--
             break;
           default:
-
         }
       }
+      var name = layers[currentLayerIndex].attributes['inkscape:label'].value;
+      document.querySelector('#layerName').innerHTML = name
+      document.querySelector('#currentLayerIndex').innerHTML = currentLayerIndex + 1
     }
     function setBackgroundColor () {
       var bodyNode = document.querySelector('body')
       var pageSettingsNode = document.querySelector('[pagecolor]')
       bodyNode.style.backgroundColor = pageSettingsNode.getAttribute('pagecolor')
+    }
+    function setSlideCounter () {
+      slideCount = layers.length
+      document.querySelector('#slideCount').innerHTML = slideCount
+    }
+    function getLayers () {
+      layers = document.querySelectorAll('g[inkscape\\:groupmode=layer]')
+    }
+    function enableButtons () {
+      document.querySelectorAll('nav button').forEach(function(button){
+        button.disabled = false
+      })
     }
     function handleFileSelect(evt) {
       //https://www.html5rocks.com/de/tutorials/file/dndfiles/
@@ -100,19 +136,49 @@
 
       // Read in the image file as plain text.
       reader.readAsText(file);
+      // Remove focus from input button
+      document.querySelector('#loader').blur()
+    }
+    function handleKeyEvent (event) {
+      switch (event.key) {
+        case 'Backspace':
+          prev()
+          break;
+        case 'ArrowLeft':
+          prev()
+          break;
+        case 'ArrowUp':
+          prev()
+          break;
+        case 'ArrowRight':
+          next()
+          break;
+        case 'ArrowDown':
+          next()
+          break;
+        case ' ':
+          next()
+          break;
+        case 'Enter':
+          next()
+          break;
+        default:
+      }
     }
 
     // CONTROLLER FUNCTIONS
     var setupPresentation = function () {
       //requires svg file to be inserted
       setBackgroundColor()
-      layers = document.querySelectorAll('g[inkscape\\:groupmode=layer]')
+      getLayers()
+      setSlideCounter()
+      enableButtons()
       //hide all layers
       layers.forEach(function(layer){
         layer.style.display = 'none';
       })
       //set first layer as currentLayer
-      currentLayerIndex = 0;
+      setCurrentLayer(0);
       showCurrentLayer()
     }
     var prev = function () {
@@ -127,11 +193,12 @@
     }
 
     // INIT
-    document.getElementById('loader').addEventListener('change', handleFileSelect, false);
+    document.getElementById('loader').addEventListener('change', handleFileSelect, false)
+    document.onkeydown = handleKeyEvent
     if (document.querySelector('output svg')) {
       setupPresentation()
     }
     </script>
-
+  
 
 </body></html>

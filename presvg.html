@@ -9,16 +9,40 @@
       left: 50%;
       transform: translate(-50%, -50%);
     }
+    nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 0.5rem;
+      display: flex;
+      flex-flow: row wrap;
+      justify-content: space-around;
+      background-color: rgba(0,0,0,0.1);
+    }
+    nav button{
+      font-size: 1em
+    }
+    #layerName{
+      width: 8rem;
+    }
     </style>
-
-    <input type="file" id="loader" name="loader" />
-    <button onclick="prev()">back</button>
-    <button onclick="next()">next</button>
-    <output id="preSvg" class="center"></output>
+    <nav>
+      <button disabled onclick="prev()">back</button>
+      <button disabled onclick="next()">next</button>
+      <span id="layerName"></span>
+      <div name="slideCounter">
+        <span id="currentLayerIndex"></span>/<span id="slideCount"></span>
+      </div>
+    </nav>
+    <output id="preSvg" class="center">
+      <input type="file" id="loader" name="loader" />
+    </output>
 
     <script>
     var layers = [];
     var currentLayerIndex;
+    var slideCount;
 
     // SERVICE FUNCTIONS
     function hideCurrentLayer () {
@@ -39,14 +63,28 @@
             currentLayerIndex == 0 ? currentLayerIndex = layers.length - 1 : currentLayerIndex--
             break;
           default:
-
         }
       }
+      var name = layers[currentLayerIndex].attributes['inkscape:label'].value;
+      document.querySelector('#layerName').innerHTML = name
+      document.querySelector('#currentLayerIndex').innerHTML = currentLayerIndex + 1
     }
     function setBackgroundColor () {
       var bodyNode = document.querySelector('body')
       var pageSettingsNode = document.querySelector('[pagecolor]')
       bodyNode.style.backgroundColor = pageSettingsNode.getAttribute('pagecolor')
+    }
+    function setSlideCounter () {
+      slideCount = layers.length
+      document.querySelector('#slideCount').innerHTML = slideCount
+    }
+    function getLayers () {
+      layers = document.querySelectorAll('g[inkscape\\:groupmode=layer]')
+    }
+    function enableButtons () {
+      document.querySelectorAll('nav button').forEach(function(button){
+        button.disabled = false
+      })
     }
     function handleFileSelect(evt) {
       //https://www.html5rocks.com/de/tutorials/file/dndfiles/
@@ -70,9 +108,14 @@
 
       // Read in the image file as plain text.
       reader.readAsText(file);
+      // Remove focus from input button
+      document.querySelector('#loader').blur()
     }
     function handleKeyEvent (event) {
       switch (event.key) {
+        case 'Backspace':
+          prev()
+          break;
         case 'ArrowLeft':
           prev()
           break;
@@ -85,6 +128,12 @@
         case 'ArrowDown':
           next()
           break;
+        case ' ':
+          next()
+          break;
+        case 'Enter':
+          next()
+          break;
         default:
       }
     }
@@ -93,13 +142,15 @@
     var setupPresentation = function () {
       //requires svg file to be inserted
       setBackgroundColor()
-      layers = document.querySelectorAll('g[inkscape\\:groupmode=layer]')
+      getLayers()
+      setSlideCounter()
+      enableButtons()
       //hide all layers
       layers.forEach(function(layer){
         layer.style.display = 'none';
       })
       //set first layer as currentLayer
-      currentLayerIndex = 0;
+      setCurrentLayer(0);
       showCurrentLayer()
     }
     var prev = function () {
