@@ -82,9 +82,11 @@
       layers = document.querySelectorAll('g[inkscape\\:groupmode=layer]')
     }
     function enableButtons () {
-      document.querySelectorAll('nav button').forEach(function(button){
-        button.disabled = false
-      })
+      var buttons = document.querySelectorAll('nav button')
+      for (var i = 0, length = buttons.length; i < length; i++) {
+        console.log(buttons[i])
+        buttons[i].disabled = false
+      }
     }
     function handleFileSelect(evt) {
       //https://www.html5rocks.com/de/tutorials/file/dndfiles/
@@ -135,6 +137,7 @@
           next()
           break;
         default:
+          console.log('no function for', event.key)
       }
     }
 
@@ -146,9 +149,9 @@
       setSlideCounter()
       enableButtons()
       //hide all layers
-      layers.forEach(function(layer){
-        layer.style.display = 'none';
-      })
+      for (var i = 0, length = layers.length; i < length; i++) {
+        layers[i].style.display = 'none';
+      }
       //set first layer as currentLayer
       setCurrentLayer(0);
       showCurrentLayer()
@@ -165,7 +168,8 @@
     }
 
     // INIT
-    document.getElementById('loader').addEventListener('change', handleFileSelect, false)
+    var loaderNode = document.getElementById('loader')
+    if (loaderNode) loaderNode.addEventListener('change', handleFileSelect, false)
     document.onkeydown = handleKeyEvent
     if (document.querySelector('output svg')) {
       setupPresentation()

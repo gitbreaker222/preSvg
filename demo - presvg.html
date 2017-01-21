@@ -1,5 +1,5 @@
 
-<!-- saved from url=(0128)file:///media/lexon222/Eigene_Dateien/Programme_Eigene_Dateien/entwicklung%20software%20tools%20libs/Projekte/preSvg/presvg.html -->
+<!-- saved from url=(0139)file:///media/lexon222/Eigene_Dateien/Programme_Eigene_Dateien/entwicklung%20software%20tools%20libs/Projekte/preSvg/demo%20-%20presvg.html -->
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252"></head>
   <body style="background-color: rgb(233, 220, 210);">
 
@@ -193,12 +193,14 @@
     }
 
     // INIT
-    document.getElementById('loader').addEventListener('change', handleFileSelect, false)
+    var loaderNode = document.getElementById('loader')
+    if (loaderNode) loaderNode.addEventListener('change', handleFileSelect, false)
     document.onkeydown = handleKeyEvent
     if (document.querySelector('output svg')) {
       setupPresentation()
     }
     </script>
-  
+
+
 
 </body></html>
