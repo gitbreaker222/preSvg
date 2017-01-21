@@ -1,6 +1,8 @@
 # preSvg
 presentationable vector graphics created with inkscape
 
+## [try live version](https://rawgit.com/gitbreaker222/preSvg/master/presvg.html)
+
 ## how to create svg-slides
 
 In inkscape:
