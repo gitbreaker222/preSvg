@@ -28,8 +28,8 @@
     }
     </style>
     <nav>
-      <button onclick="prev()">back</button>
-      <button onclick="next()">next</button>
+      <button disabled onclick="prev()">back</button>
+      <button disabled onclick="next()">next</button>
       <span id="layerName"></span>
       <div name="slideCounter">
         <span id="currentLayerIndex"></span>/<span id="slideCount"></span>
@@ -78,8 +78,13 @@
       slideCount = layers.length
       document.querySelector('#slideCount').innerHTML = slideCount
     }
-    function removeLoadButton () {
-      document.querySelector('#loader').style.display = none
+    function getLayers () {
+      layers = document.querySelectorAll('g[inkscape\\:groupmode=layer]')
+    }
+    function enableButtons () {
+      document.querySelectorAll('nav button').forEach(function(button){
+        button.disabled = false
+      })
     }
     function handleFileSelect(evt) {
       //https://www.html5rocks.com/de/tutorials/file/dndfiles/
@@ -137,8 +142,9 @@
     var setupPresentation = function () {
       //requires svg file to be inserted
       setBackgroundColor()
-      layers = document.querySelectorAll('g[inkscape\\:groupmode=layer]')
+      getLayers()
       setSlideCounter()
+      enableButtons()
       //hide all layers
       layers.forEach(function(layer){
         layer.style.display = 'none';
