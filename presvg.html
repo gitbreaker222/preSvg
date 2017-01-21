@@ -12,7 +12,7 @@
     </style>
 
     <input type="file" id="loader" name="loader" />
-    <button onclick="back()">back</button>
+    <button onclick="prev()">back</button>
     <button onclick="next()">next</button>
     <output id="preSvg" class="center"></output>
 
@@ -83,6 +83,11 @@
       })
       //set first layer as currentLayer
       currentLayerIndex = 0;
+      showCurrentLayer()
+    }
+    var prev = function () {
+      hideCurrentLayer()
+      setCurrentLayer('prev')
       showCurrentLayer()
     }
     var next = function () {
