@@ -20,12 +20,14 @@
       justify-content: space-around;
       background-color: rgba(0,0,0,0.1);
     }
+    nav button{
+      font-size: 1em
+    }
     #layerName{
       width: 8rem;
     }
     </style>
     <nav>
-      <input type="file" id="loader" name="loader" />
       <button onclick="prev()">back</button>
       <button onclick="next()">next</button>
       <span id="layerName"></span>
@@ -33,7 +35,9 @@
         <span id="currentLayerIndex"></span>/<span id="slideCount"></span>
       </div>
     </nav>
-    <output id="preSvg" class="center"></output>
+    <output id="preSvg" class="center">
+      <input type="file" id="loader" name="loader" />
+    </output>
 
     <script>
     var layers = [];
@@ -69,6 +73,13 @@
       var bodyNode = document.querySelector('body')
       var pageSettingsNode = document.querySelector('[pagecolor]')
       bodyNode.style.backgroundColor = pageSettingsNode.getAttribute('pagecolor')
+    }
+    function setSlideCounter () {
+      slideCount = layers.length
+      document.querySelector('#slideCount').innerHTML = slideCount
+    }
+    function removeLoadButton () {
+      document.querySelector('#loader').style.display = none
     }
     function handleFileSelect(evt) {
       //https://www.html5rocks.com/de/tutorials/file/dndfiles/
@@ -127,8 +138,7 @@
       //requires svg file to be inserted
       setBackgroundColor()
       layers = document.querySelectorAll('g[inkscape\\:groupmode=layer]')
-      slideCount = layers.length
-      document.querySelector('#slideCount').innerHTML = slideCount
+      setSlideCounter()
       //hide all layers
       layers.forEach(function(layer){
         layer.style.display = 'none';
