@@ -2,76 +2,102 @@
   <head></head>
   <body>
 
-  <style>
-  .center {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-  </style>
+    <style>
+    .center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    </style>
 
-  <input type="file" id="loader" name="loader" />
-  <button onclick="back()">back</button>
-  <button onclick="next()">next</button>
-  <output id="preSvg" class="center"></output>
+    <input type="file" id="loader" name="loader" />
+    <button onclick="prev()">back</button>
+    <button onclick="next()">next</button>
+    <output id="preSvg" class="center"></output>
 
-  <script>
-  var layers = [];
-  var currentLayerIndex;
+    <script>
+    var layers = [];
+    var currentLayerIndex;
 
-  function setupPresentation () {
-    //set background color
-    var bodyNode = document.querySelector('body')
-    var pageSettingsNode = document.querySelector('[pagecolor]')
-    bodyNode.style.backgroundColor = pageSettingsNode.getAttribute('pagecolor')
-    
-    layers = document.querySelectorAll('g[inkscape\\:groupmode=layer]')
-    console.log(layers)
-    // TODO exclude all non-slide layers
-    layers.forEach(function(layer){
-      //hide all layers
-      layer.style.display = 'none';
-    })
-    //set first layer as currentLayer
-    currentLayerIndex = 0;
-    //show currentLayer
-    layers[currentLayerIndex].style.display = 'inline'
-  }
+    // SERVICE FUNCTIONS
+    function hideCurrentLayer () {
+      layers[currentLayerIndex].style.display = 'none'
+    }
+    function showCurrentLayer () {
+      layers[currentLayerIndex].style.display = 'inline'
+    }
+    function setCurrentLayer (indexOrKeyword) {
+      if (typeof indexOrKeyword == 'number') {
+        currentLayerIndex = indexOrKeyword
+      } else {
+        switch (indexOrKeyword) {
+          case 'next':
+            currentLayerIndex == layers.length - 1 ? currentLayerIndex = 0 : currentLayerIndex++
+            break;
+          case 'prev':
+            currentLayerIndex == 0 ? currentLayerIndex = layers.length - 1 : currentLayerIndex--
+            break;
+          default:
 
-  function handleFileSelect(evt) {
-    var file = evt.target.files[0]; // FileList object
+        }
+      }
+    }
+    function setBackgroundColor () {
+      var bodyNode = document.querySelector('body')
+      var pageSettingsNode = document.querySelector('[pagecolor]')
+      bodyNode.style.backgroundColor = pageSettingsNode.getAttribute('pagecolor')
+    }
+    function handleFileSelect(evt) {
+      //https://www.html5rocks.com/de/tutorials/file/dndfiles/
+      var file = evt.target.files[0]; // FileList object
 
-    // Only process image files.
-    if (!file.type.match('image.*')) {
-      console.error('only accept image files'); return;
+      // Only process image files.
+      if (!file.type.match('image.*')) {
+        console.error('only accept image files');
+        return;
+      }
+
+      var reader = new FileReader();
+
+      // Closure to capture the file information.
+      reader.onload = (function(theFile) {
+        return function(event) {
+          document.getElementById('preSvg').innerHTML = event.target.result;
+          setupPresentation();
+        };
+      })(file);
+
+      // Read in the image file as plain text.
+      reader.readAsText(file);
     }
 
-    var reader = new FileReader();
+    // CONTROLLER FUNCTIONS
+    var setupPresentation = function () {
+      //requires svg file to be inserted
+      setBackgroundColor()
+      layers = document.querySelectorAll('g[inkscape\\:groupmode=layer]')
+      //hide all layers
+      layers.forEach(function(layer){
+        layer.style.display = 'none';
+      })
+      //set first layer as currentLayer
+      currentLayerIndex = 0;
+      showCurrentLayer()
+    }
+    var prev = function () {
+      hideCurrentLayer()
+      setCurrentLayer('prev')
+      showCurrentLayer()
+    }
+    var next = function () {
+      hideCurrentLayer()
+      setCurrentLayer('next')
+      showCurrentLayer()
+    }
 
-    // Closure to capture the file information.
-    reader.onload = (function(theFile) {
-      return function(event) {
-        document.getElementById('preSvg').innerHTML = event.target.result;
-        setupPresentation();
-      };
-    })(file);
-
-    // Read in the image file as plain text.
-    reader.readAsText(file);
-  }
-
-  document.getElementById('loader').addEventListener('change', handleFileSelect, false);
-
-  function next () {
-    //hide currentLayer
-    layers[currentLayerIndex].style.display = 'none'
-    //get next layer
-    layers.length - 1 == currentLayerIndex ? currentLayerIndex = 0 : currentLayerIndex++
-    //show new currentLayer
-    layers[currentLayerIndex].style.display = 'inline'
-  }
-  </script>
-
+    // INIT
+    document.getElementById('loader').addEventListener('change', handleFileSelect, false);
+    </script>
   </body>
 </html>
