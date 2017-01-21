@@ -70,9 +70,14 @@
 
       // Read in the image file as plain text.
       reader.readAsText(file);
+      // Remove focus from input button
+      document.querySelector('#loader').blur()
     }
     function handleKeyEvent (event) {
       switch (event.key) {
+        case 'Backspace':
+          prev()
+          break;
         case 'ArrowLeft':
           prev()
           break;
@@ -83,6 +88,12 @@
           next()
           break;
         case 'ArrowDown':
+          next()
+          break;
+        case ' ':
+          next()
+          break;
+        case 'Enter':
           next()
           break;
         default:

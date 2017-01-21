@@ -15,4 +15,6 @@ In inkscape:
 - open **preSvg.html** in your browser
 - load your inkscape svg file
 - --> the first slide/layer shows up
-- click **back/next** to loop through slides
+- click **back/next** or use arrow keys to loop through slides
+  - back = arrow up, arrow left, backspace
+  - next = arrow down, arrow right, space, enter
