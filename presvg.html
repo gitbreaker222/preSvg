@@ -98,6 +98,9 @@
 
     // INIT
     document.getElementById('loader').addEventListener('change', handleFileSelect, false);
+    if (document.querySelector('output svg')) {
+      setupPresentation()
+    }
     </script>
   </body>
 </html>
