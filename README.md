@@ -1,7 +1,7 @@
 # preSvg
 presentationable vector graphics created with inkscape
 
-## [try live version](https://rawgit.com/gitbreaker222/preSvg/master/presvg.html)
+## [try live version](http://htmlpreview.github.io/?https://github.com/gitbreaker222/preSvg/blob/master/presvg.html)
 
 ## how to create svg-slides
 
