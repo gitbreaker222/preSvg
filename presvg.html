@@ -26,8 +26,11 @@
       font-size: 1em
     }
     output svg {
-      height: 95vh;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
       margin-bottom: 5vh;
+      overflow: visible;
     }
     #layerName{
       width: 8rem;
@@ -41,8 +44,8 @@
         <span id="currentLayerIndex"></span>/<span id="slideCount"></span>
       </div>
     </nav>
-    <output id="preSvg" class="center">
-      <input type="file" id="loader" name="loader" />
+    <output id="preSvg">
+      <input type="file" id="loader" class="center" name="loader" />
     </output>
 
     <script>
