@@ -9,18 +9,20 @@
       left: 50%;
       transform: translate(-50%, -50%);
     }
-    nav {
+    .fixedLabel {
       position: fixed;
       z-index: 99;
-      bottom: 0;
-      left: 0;
-      width: 100%;
+      background-color: rgba(0,0,0,0.5);
+      color: white;
       padding: 0.5rem;
+    }
+    nav {
+      bottom: 0;
+      right: 0;
+      width: 18%;
       display: flex;
       flex-flow: row wrap;
       justify-content: space-around;
-      background-color: rgba(0,0,0,0.5);
-      color: white;
     }
     nav button{
       font-size: 1em
@@ -29,17 +31,19 @@
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
-      margin-bottom: 5vh;
+      margin-bottom: 2rem;
       overflow: visible;
     }
     #layerName{
-      width: 8rem;
+      left: 50%;
+      transform: translateX(-50%);
     }
     </style>
-    <nav>
+
+    <span id="layerName" class="fixedLabel">preSvg - please choose your svg presentation</span>
+    <nav class="fixedLabel">
       <button disabled onclick="prev()">back</button>
       <button disabled onclick="next()">next</button>
-      <span id="layerName"></span>
       <div name="slideCounter">
         <span id="currentLayerIndex"></span>/<span id="slideCount"></span>
       </div>
@@ -52,7 +56,6 @@
     var layers = [];
     var currentLayerIndex;
     var slideCount;
-
     // SERVICE FUNCTIONS
     function hideCurrentLayer () {
       layers[currentLayerIndex].style.display = 'none'
@@ -100,15 +103,12 @@
     function handleFileSelect(evt) {
       //https://www.html5rocks.com/de/tutorials/file/dndfiles/
       var file = evt.target.files[0]; // FileList object
-
       // Only process image files.
       if (!file.type.match('image.*')) {
         console.error('only accept image files');
         return;
       }
-
       var reader = new FileReader();
-
       // Closure to capture the file information.
       reader.onload = (function(theFile) {
         return function(event) {
@@ -116,7 +116,6 @@
           setupPresentation();
         };
       })(file);
-
       // Read in the image file as plain text.
       reader.readAsText(file);
       // Remove focus from input button
@@ -149,7 +148,6 @@
           console.log('no function for', event.key)
       }
     }
-
     // CONTROLLER FUNCTIONS
     var setupPresentation = function () {
       //requires svg file to be inserted
@@ -175,7 +173,6 @@
       setCurrentLayer('next')
       showCurrentLayer()
     }
-
     // INIT
     var loaderNode = document.getElementById('loader')
     if (loaderNode) loaderNode.addEventListener('change', handleFileSelect, false)
