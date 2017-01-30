@@ -3,6 +3,15 @@
   <body>
 
     <style>
+    body{
+      font-size: 3vh;
+    }
+    a {
+      color: white;
+    }
+    button {
+      border: none;
+    }
     .center {
       position: absolute;
       top: 50%;
@@ -38,6 +47,27 @@
       left: 50%;
       transform: translateX(-50%);
     }
+    .menu{
+      position: fixed;
+      left: 0;
+      top: 0;
+      background-color: rgb(0,0,0);
+      height: 100vh;
+      width: 75vw;
+      max-width: 20rem;
+      color: white;
+      transition: transform 200ms;
+    }
+    .menu.closed{
+      transform: translateX(-100%);
+    }
+    .menu button{
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      transform: translateX(100%);
+      font-size: 1em;
+    }
     </style>
 
     <span id="layerName" class="fixedLabel">preSvg - please choose your svg presentation</span>
@@ -51,35 +81,42 @@
     <output id="preSvg">
       <input type="file" id="loader" class="center" name="loader" />
     </output>
+    <div class="menu closed">
+      <ol id="toc"></ol>
+      <button class="fixedLabel"
+              onclick="menu()">
+        ▤ menu
+      </button>
+    </div>
+    
 
     <script>
-    var layers = [];
-    var currentLayerIndex;
+    var slides = [];
+    var chapters = [];
+    var currentLayerIndex = 0;
     var slideCount;
     // SERVICE FUNCTIONS
     function hideCurrentLayer () {
-      layers[currentLayerIndex].style.display = 'none'
+      slides[currentLayerIndex].style.display = 'none'
     }
     function showCurrentLayer () {
-      layers[currentLayerIndex].style.display = 'inline'
+      slides[currentLayerIndex].style.display = 'inline'
     }
-    function setCurrentLayer (indexOrKeyword) {
-      if (typeof indexOrKeyword == 'number') {
-        currentLayerIndex = indexOrKeyword
+    function setCurrentLayerById (idOrIndex) {
+      hideCurrentLayer()
+
+      if (typeof idOrIndex == 'number') {
+        currentLayerIndex = idOrIndex
       } else {
-        switch (indexOrKeyword) {
-          case 'next':
-            currentLayerIndex == layers.length - 1 ? currentLayerIndex = 0 : currentLayerIndex++
-            break;
-          case 'prev':
-            currentLayerIndex == 0 ? currentLayerIndex = layers.length - 1 : currentLayerIndex--
-            break;
-          default:
-        }
+        // expect id string - get index of slide with that id
+        currentLayerIndex = getIndexById(idOrIndex)
       }
-      var name = layers[currentLayerIndex].attributes['inkscape:label'].value;
+
+      var name = slides[currentLayerIndex].attributes['inkscape:label'].value
       document.querySelector('#layerName').innerHTML = name
       document.querySelector('#currentLayerIndex').innerHTML = currentLayerIndex + 1
+
+      showCurrentLayer()
     }
     function setBackgroundColor () {
       var bodyNode = document.querySelector('body')
@@ -87,16 +124,56 @@
       bodyNode.style.backgroundColor = pageSettingsNode.getAttribute('pagecolor')
     }
     function setSlideCounter () {
-      slideCount = layers.length
+      slideCount = slides.length
       document.querySelector('#slideCount').innerHTML = slideCount
     }
-    function getLayers () {
-      layers = document.querySelectorAll('g[inkscape\\:groupmode=layer]')
+    function saveAsChapter (slide) {
+      var chapter = {
+        id: slide.id,
+        name: slide.attributes['inkscape:label'].value
+      }
+      chapters.push(chapter)
+    }
+    function getSlides () {
+      var name
+
+      var layers = document.querySelectorAll('output svg > g')
+
+      for (var i = 0, length = layers.length; i < length; i++) {
+        name = layers[i].attributes['inkscape:label'].value
+        if (name.match(/^#/)){
+          name = name.slice(1).trim()
+          layers[i].attributes['inkscape:label'].value = name
+          saveAsChapter(layers[i])
+        } else if (name.match(/^\./)){
+          //hidden layer
+          layers[i].style.display = 'none'
+          continue
+        }
+        slides.push(layers[i])
+      }
+    }
+    function getIndexById (id) {
+      for (var i = 0, length = slides.length; i < length; i++) {
+        if (slides[i].id === id) return i
+      }
+      return currentLayer
+    }
+    function setTableOfContents () {
+      var tocNode = document.querySelector('#toc')
+      var item;
+      for (var i = 0, length = chapters.length; i < length; i++) {
+        //create list item
+        item = document.createElement("li")
+        //fill item with html
+        item.innerHTML = '<a href="#'+chapters[i].id+'">'+chapters[i].name+'</a>'
+        //append list item
+        tocNode.appendChild(item)
+      }
     }
     function enableButtons () {
       var buttons = document.querySelectorAll('nav button')
       for (var i = 0, length = buttons.length; i < length; i++) {
-        console.log(buttons[i])
         buttons[i].disabled = false
       }
     }
@@ -148,30 +225,53 @@
           console.log('no function for', event.key)
       }
     }
+    function toggleMenu () {
+      var menuNode = document.querySelector('.menu')
+      if (menuNode.classList.contains('closed')) {
+        menuNode.classList.remove('closed')
+      } else {
+        menuNode.classList.add('closed')
+      }
+    }
+    function hideMenu () {
+      var menuNode = document.querySelector('.menu')
+      if (!menuNode.classList.contains('closed')) {
+        menuNode.classList.add('closed')
+      } 
+    }
     // CONTROLLER FUNCTIONS
     var setupPresentation = function () {
       //requires svg file to be inserted
       setBackgroundColor()
-      getLayers()
+      getSlides()
       setSlideCounter()
+      setTableOfContents()
       enableButtons()
       //hide all layers
-      for (var i = 0, length = layers.length; i < length; i++) {
-        layers[i].style.display = 'none';
+      for (var i = 0, length = slides.length; i < length; i++) {
+        slides[i].style.display = 'none';
       }
       //set first layer as currentLayer
-      setCurrentLayer(0);
-      showCurrentLayer()
+      setCurrentLayerById(0);
+      //set listener for url hash changes
+      window.onhashchange = toSlideByCurrentHash;
+    }
+    var menu = function () {
+      toggleMenu()
     }
     var prev = function () {
-      hideCurrentLayer()
-      setCurrentLayer('prev')
-      showCurrentLayer()
+      var index = currentLayerIndex - 1
+      if (index < 0) index = slides.length - 1
+      window.location.replace('#'+slides[index].id)
     }
     var next = function () {
-      hideCurrentLayer()
-      setCurrentLayer('next')
-      showCurrentLayer()
+      var index = currentLayerIndex + 1
+      if (index == slides.length) index = 0
+      window.location.replace('#'+slides[index].id)
+    }
+    var toSlideByCurrentHash = function () {
+      setCurrentLayerById(window.location.hash.slice(1))
+      hideMenu()
     }
     // INIT
     var loaderNode = document.getElementById('loader')
