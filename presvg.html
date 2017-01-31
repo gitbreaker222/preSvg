@@ -141,14 +141,21 @@
 
       for (var i = 0, length = layers.length; i < length; i++) {
         name = layers[i].attributes['inkscape:label'].value
-        if (name.match(/^#/)){
-          name = name.slice(1).trim()
-          layers[i].attributes['inkscape:label'].value = name
-          saveAsChapter(layers[i])
-        } else if (name.match(/^\./)){
-          //hidden layer
-          layers[i].style.display = 'none'
-          continue
+        switch (name[0]){
+          case '+':
+            // show all + layers, don't add to slides
+            layers[i].style.display = 'inline'
+            continue
+          case '.':
+            // hide all . layers, don't add to slides
+            layers[i].style.display = 'none'
+            continue
+          case '#':
+            // add chapter for all # layers
+            name = name.slice(1).trim()
+            layers[i].attributes['inkscape:label'].value = name
+            saveAsChapter(layers[i])
+            break;
         }
         slides.push(layers[i])
       }
