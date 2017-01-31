@@ -68,6 +68,17 @@
       transform: translateX(100%);
       font-size: 1em;
     }
+    svg.circle{
+      height: 1em;
+      transform: rotate(-90deg);
+    }
+    svg circle {
+      fill:none;
+      stroke:#ffffff;
+      stroke-width: 32%;
+      stroke-dasharray: 100;
+      stroke-dashoffset: 0;
+    }
     </style>
 
     <span id="layerName" class="fixedLabel">preSvg - please choose your svg presentation</span>
@@ -77,6 +88,9 @@
       <div name="slideCounter">
         <span id="currentLayerIndex"></span>/<span id="slideCount"></span>
       </div>
+      <svg viewBox="0 0 64 64" class="circle">
+        <circle r="25%" cy="50%" cx="50%"/>
+      </svg>
     </nav>
     <output id="preSvg">
       <input type="file" id="loader" class="center" name="loader" />
@@ -113,8 +127,10 @@
       }
 
       var name = slides[currentLayerIndex].attributes['inkscape:label'].value
+      var percentage = (currentLayerIndex * 100) / slideCount
       document.querySelector('#layerName').innerHTML = name
       document.querySelector('#currentLayerIndex').innerHTML = currentLayerIndex + 1
+      document.querySelector('.circle circle').style.strokeDashoffset = -percentage
 
       showCurrentLayer()
     }
