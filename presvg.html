@@ -15,6 +15,11 @@
         border: none;
       }
 
+      span.ref {
+        text-decoration: underline;
+        cursor: pointer;
+      }
+
       .center {
         position: absolute;
         top: 50%;
@@ -217,7 +222,7 @@
         //create list item
         item = document.createElement("li")
         //fill item with html
-        item.innerHTML = '<a href="#'+chapters[i].id+'">'+chapters[i].name+'</a>'
+        item.innerHTML = '<span class="ref" data-hash="#'+chapters[i].id+'" onclick="setUrlHash(event)">'+chapters[i].name+'</span>'
         //append list item
         tocNode.appendChild(item)
       }
@@ -310,16 +315,24 @@
     var menu = function () {
       toggleMenu()
     }
+    var setUrlHash = function (hash) {
+      if (typeof hash === 'object') {
+        //is event
+        hash = hash.target.dataset.hash
+      }
+      window.location.replace(hash)
+    }
     var prev = function () {
       var index = currentLayerIndex - 1
       if (index < 0) index = slides.length - 1
-      window.location.replace('#'+slides[index].id)
+      setUrlHash('#'+slides[index].id)
     }
     var next = function () {
       var index = currentLayerIndex + 1
       if (index == slides.length) index = 0
-      window.location.replace('#'+slides[index].id)
+      setUrlHash('#'+slides[index].id)
     }
+  
     var toSlideByCurrentHash = function () {
       setCurrentLayerById(window.location.hash.slice(1))
       hideMenu()
