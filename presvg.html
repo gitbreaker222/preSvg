@@ -3,82 +3,115 @@
   <body>
 
     <style>
-    body{
-      font-size: 3vh;
-    }
-    a {
-      color: white;
-    }
-    button {
-      border: none;
-    }
-    .center {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-    .fixedLabel {
-      position: fixed;
-      z-index: 99;
-      background-color: rgba(0,0,0,0.5);
-      color: white;
-      padding: 0.5rem;
-    }
-    nav {
-      bottom: 0;
-      right: 0;
-      width: 18%;
-      display: flex;
-      flex-flow: row wrap;
-      justify-content: space-around;
-    }
-    nav button{
-      font-size: 1em
-    }
-    output svg {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      margin-bottom: 2rem;
-      overflow: visible;
-    }
-    #layerName{
-      left: 50%;
-      transform: translateX(-50%);
-    }
-    .menu{
-      position: fixed;
-      left: 0;
-      top: 0;
-      background-color: rgb(0,0,0);
-      height: 100vh;
-      width: 75vw;
-      max-width: 20rem;
-      color: white;
-      transition: transform 200ms;
-    }
-    .menu.closed{
-      transform: translateX(-100%);
-    }
-    .menu button{
-      position: absolute;
-      bottom: 0;
-      right: 0;
-      transform: translateX(100%);
-      font-size: 1em;
-    }
-    svg.circle{
-      height: 1em;
-      transform: rotate(-90deg);
-    }
-    svg circle {
-      fill:none;
-      stroke:#ffffff;
-      stroke-width: 32%;
-      stroke-dasharray: 100;
-      stroke-dashoffset: 0;
-    }
+      body {
+        font-size: 3vh;
+      }
+
+      a {
+        color: white;
+      }
+
+      button {
+        border: none;
+      }
+
+      span.ref {
+        text-decoration: underline;
+        cursor: pointer;
+      }
+
+      .center {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      .fixedLabel {
+        position: fixed;
+        z-index: 99;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        padding: 0.5rem;
+      }
+
+      nav {
+        bottom: 0;
+        right: 0;
+        min-width: 8em;
+        max-width: 50vw;
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: space-around;
+      }
+
+      nav > * {
+        font-size: 2rem;
+        margin: 0 0.2em;
+      }
+
+      output svg {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        margin-bottom: 2rem;
+        overflow: visible;
+      }
+
+      #layerName {
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 2rem;
+      }
+
+      .menu {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        z-index: 199;
+        background-color: rgb(0, 0, 0);
+        height: 100vh;
+        width: 75vw;
+        max-width: 20rem;
+        font-size: 2rem;
+        color: white;
+        box-shadow: rgba(0, 0, 0, 0.5) 10px 0rem 10px -5px;
+        transition: transform 200ms;
+      }
+
+      .menu.closed {
+        transform: translateX(-100%);
+      }
+
+      .menu ol {
+        height: 90%;
+        overflow-y: overlay;
+      }
+
+      .menu li {
+        margin: 1em 0;
+      }
+
+      .menu button {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        transform: translateX(100%);
+        font-size: 1em;
+      }
+
+      svg.circle {
+        height: 1em;
+        transform: rotate(-90deg);
+      }
+
+      svg circle {
+        fill: none;
+        stroke: #ffffff;
+        stroke-width: 32%;
+        stroke-dasharray: 100;
+        stroke-dashoffset: 0;
+      }
     </style>
 
     <span id="layerName" class="fixedLabel">preSvg - please choose your svg presentation</span>
@@ -189,7 +222,7 @@
         //create list item
         item = document.createElement("li")
         //fill item with html
-        item.innerHTML = '<a href="#'+chapters[i].id+'">'+chapters[i].name+'</a>'
+        item.innerHTML = '<span class="ref" data-hash="#'+chapters[i].id+'" onclick="setUrlHash(event)">'+chapters[i].name+'</span>'
         //append list item
         tocNode.appendChild(item)
       }
@@ -282,16 +315,24 @@
     var menu = function () {
       toggleMenu()
     }
+    var setUrlHash = function (hash) {
+      if (typeof hash === 'object') {
+        //is event
+        hash = hash.target.dataset.hash
+      }
+      window.location.replace(hash)
+    }
     var prev = function () {
       var index = currentLayerIndex - 1
       if (index < 0) index = slides.length - 1
-      window.location.replace('#'+slides[index].id)
+      setUrlHash('#'+slides[index].id)
     }
     var next = function () {
       var index = currentLayerIndex + 1
       if (index == slides.length) index = 0
-      window.location.replace('#'+slides[index].id)
+      setUrlHash('#'+slides[index].id)
     }
+  
     var toSlideByCurrentHash = function () {
       setCurrentLayerById(window.location.hash.slice(1))
       hideMenu()
