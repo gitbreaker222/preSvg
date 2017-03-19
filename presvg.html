@@ -126,7 +126,7 @@
       </svg>
     </nav>
     <output id="preSvg">
-      <input type="file" id="loader" class="center" name="loader" />
+      <app-file-loader class="center"></app-file-loader>
     </output>
     <div class="menu closed">
       <ol id="toc"></ol>
@@ -135,215 +135,230 @@
         ▤ menu
       </button>
     </div>
-    
+
+
+
+
+    <script type="riot/tag">
+      <app-file-loader>
+        <input type="file" ref="loader"/>
+
+        function init () {
+          this.refs.loader.addEventListener('change', handleFileSelect, false)
+        }
+        this.on('mount', init)
+      </app-file-loader>
+    </script>
+
+    <script src="riot-3.3.2+compiler.min.js"></script>
 
     <script>
-    var slides = [];
-    var chapters = [];
-    var currentLayerIndex = 0;
-    var slideCount;
-    // SERVICE FUNCTIONS
-    function hideCurrentLayer () {
-      slides[currentLayerIndex].style.display = 'none'
-    }
-    function showCurrentLayer () {
-      slides[currentLayerIndex].style.display = 'inline'
-    }
-    function setCurrentLayerById (idOrIndex) {
-      hideCurrentLayer()
-
-      if (typeof idOrIndex == 'number') {
-        currentLayerIndex = idOrIndex
-      } else {
-        // expect id string - get index of slide with that id
-        currentLayerIndex = getIndexById(idOrIndex)
+      var slides = [];
+      var chapters = [];
+      var currentLayerIndex = 0;
+      var slideCount;
+      // SERVICE FUNCTIONS
+      function hideCurrentLayer () {
+        slides[currentLayerIndex].style.display = 'none'
       }
-
-      var name = slides[currentLayerIndex].attributes['inkscape:label'].value
-      var percentage = (currentLayerIndex * 100) / slideCount
-      document.querySelector('#layerName').innerHTML = name
-      document.querySelector('#currentLayerIndex').innerHTML = currentLayerIndex + 1
-      document.querySelector('.circle circle').style.strokeDashoffset = -percentage
-
-      showCurrentLayer()
-    }
-    function setBackgroundColor () {
-      var bodyNode = document.querySelector('body')
-      var pageSettingsNode = document.querySelector('[pagecolor]')
-      bodyNode.style.backgroundColor = pageSettingsNode.getAttribute('pagecolor')
-    }
-    function setSlideCounter () {
-      slideCount = slides.length
-      document.querySelector('#slideCount').innerHTML = slideCount
-    }
-    function saveAsChapter (slide) {
-      var chapter = {
-        id: slide.id,
-        name: slide.attributes['inkscape:label'].value
+      function showCurrentLayer () {
+        slides[currentLayerIndex].style.display = 'inline'
       }
-      chapters.push(chapter)
-    }
-    function getSlides () {
-      var name
+      function setCurrentLayerById (idOrIndex) {
+        hideCurrentLayer()
 
-      var layers = document.querySelectorAll('output svg > g')
-
-      for (var i = 0, length = layers.length; i < length; i++) {
-        name = layers[i].attributes['inkscape:label'].value
-        switch (name[0]){
-          case '+':
-            // show all + layers, don't add to slides
-            layers[i].style.display = 'inline'
-            continue
-          case '.':
-            // hide all . layers, don't add to slides
-            layers[i].style.display = 'none'
-            continue
-          case '#':
-            // add chapter for all # layers
-            name = name.slice(1).trim()
-            layers[i].attributes['inkscape:label'].value = name
-            saveAsChapter(layers[i])
-            break;
+        if (typeof idOrIndex == 'number') {
+          currentLayerIndex = idOrIndex
+        } else {
+          // expect id string - get index of slide with that id
+          currentLayerIndex = getIndexById(idOrIndex)
         }
-        slides.push(layers[i])
+
+        var name = slides[currentLayerIndex].attributes['inkscape:label'].value
+        var percentage = (currentLayerIndex * 100) / slideCount
+        document.querySelector('#layerName').innerHTML = name
+        document.querySelector('#currentLayerIndex').innerHTML = currentLayerIndex + 1
+        document.querySelector('.circle circle').style.strokeDashoffset = -percentage
+
+        showCurrentLayer()
       }
-    }
-    function getIndexById (id) {
-      for (var i = 0, length = slides.length; i < length; i++) {
-        if (slides[i].id === id) return i
+      function setBackgroundColor () {
+        var bodyNode = document.querySelector('body')
+        var pageSettingsNode = document.querySelector('[pagecolor]')
+        bodyNode.style.backgroundColor = pageSettingsNode.getAttribute('pagecolor')
       }
-      return currentLayer
-    }
-    function setTableOfContents () {
-      var tocNode = document.querySelector('#toc')
-      var item;
-      for (var i = 0, length = chapters.length; i < length; i++) {
-        //create list item
-        item = document.createElement("li")
-        //fill item with html
-        item.innerHTML = '<span class="ref" data-hash="#'+chapters[i].id+'" onclick="setUrlHash(event)">'+chapters[i].name+'</span>'
-        //append list item
-        tocNode.appendChild(item)
+      function setSlideCounter () {
+        slideCount = slides.length
+        document.querySelector('#slideCount').innerHTML = slideCount
       }
-    }
-    function enableButtons () {
-      var buttons = document.querySelectorAll('nav button')
-      for (var i = 0, length = buttons.length; i < length; i++) {
-        buttons[i].disabled = false
+      function saveAsChapter (slide) {
+        var chapter = {
+          id: slide.id,
+          name: slide.attributes['inkscape:label'].value
+        }
+        chapters.push(chapter)
       }
-    }
-    function handleFileSelect(evt) {
-      //https://www.html5rocks.com/de/tutorials/file/dndfiles/
-      var file = evt.target.files[0]; // FileList object
-      // Only process image files.
-      if (!file.type.match('image.*')) {
-        console.error('only accept image files');
-        return;
+      function getSlides () {
+        var name
+
+        var layers = document.querySelectorAll('output svg > g')
+
+        for (var i = 0, length = layers.length; i < length; i++) {
+          name = layers[i].attributes['inkscape:label'].value
+          switch (name[0]){
+            case '+':
+              // show all + layers, don't add to slides
+              layers[i].style.display = 'inline'
+              continue
+            case '.':
+              // hide all . layers, don't add to slides
+              layers[i].style.display = 'none'
+              continue
+            case '#':
+              // add chapter for all # layers
+              name = name.slice(1).trim()
+              layers[i].attributes['inkscape:label'].value = name
+              saveAsChapter(layers[i])
+              break;
+          }
+          slides.push(layers[i])
+        }
       }
-      var reader = new FileReader();
-      // Closure to capture the file information.
-      reader.onload = (function(theFile) {
-        return function(event) {
-          document.getElementById('preSvg').innerHTML = event.target.result;
-          setupPresentation();
-        };
-      })(file);
-      // Read in the image file as plain text.
-      reader.readAsText(file);
-      // Remove focus from input button
-      document.querySelector('#loader').blur()
-    }
-    function handleKeyEvent (event) {
-      switch (event.key) {
-        case 'Backspace':
-          prev()
-          break;
-        case 'ArrowLeft':
-          prev()
-          break;
-        case 'ArrowUp':
-          prev()
-          break;
-        case 'ArrowRight':
-          next()
-          break;
-        case 'ArrowDown':
-          next()
-          break;
-        case ' ':
-          next()
-          break;
-        case 'Enter':
-          next()
-          break;
-        default:
-          console.log('no function for', event.key)
+      function getIndexById (id) {
+        for (var i = 0, length = slides.length; i < length; i++) {
+          if (slides[i].id === id) return i
+        }
+        return currentLayer
       }
-    }
-    function toggleMenu () {
-      var menuNode = document.querySelector('.menu')
-      if (menuNode.classList.contains('closed')) {
-        menuNode.classList.remove('closed')
-      } else {
-        menuNode.classList.add('closed')
+      function setTableOfContents () {
+        var tocNode = document.querySelector('#toc')
+        var item;
+        for (var i = 0, length = chapters.length; i < length; i++) {
+          //create list item
+          item = document.createElement("li")
+          //fill item with html
+          item.innerHTML = '<span class="ref" data-hash="#'+chapters[i].id+'" onclick="setUrlHash(event)">'+chapters[i].name+'</span>'
+          //append list item
+          tocNode.appendChild(item)
+        }
       }
-    }
-    function hideMenu () {
-      var menuNode = document.querySelector('.menu')
-      if (!menuNode.classList.contains('closed')) {
-        menuNode.classList.add('closed')
-      } 
-    }
-    // CONTROLLER FUNCTIONS
-    var setupPresentation = function () {
-      //requires svg file to be inserted
-      setBackgroundColor()
-      getSlides()
-      setSlideCounter()
-      setTableOfContents()
-      enableButtons()
-      //hide all layers
-      for (var i = 0, length = slides.length; i < length; i++) {
-        slides[i].style.display = 'none';
+      function enableButtons () {
+        var buttons = document.querySelectorAll('nav button')
+        for (var i = 0, length = buttons.length; i < length; i++) {
+          buttons[i].disabled = false
+        }
       }
-      //set first layer as currentLayer
-      setCurrentLayerById(0);
-      //set listener for url hash changes
-      window.onhashchange = toSlideByCurrentHash;
-    }
-    var menu = function () {
-      toggleMenu()
-    }
-    var setUrlHash = function (hash) {
-      if (typeof hash === 'object') {
-        //is event
-        hash = hash.target.dataset.hash
+      function handleFileSelect(evt) {
+        //https://www.html5rocks.com/de/tutorials/file/dndfiles/
+        var file = evt.target.files[0]; // FileList object
+        // Only process image files.
+        if (!file.type.match('image.*')) {
+          console.error('only accept image files');
+          return;
+        }
+        var reader = new FileReader();
+        // Closure to capture the file information.
+        reader.onload = (function(theFile) {
+          return function(event) {
+            document.getElementById('preSvg').innerHTML = event.target.result;
+            setupPresentation();
+          };
+        })(file);
+        // Read in the image file as plain text.
+        reader.readAsText(file);
+        // Remove focus from input button
+        evt.target.blur()
       }
-      window.location.replace(hash)
-    }
-    var prev = function () {
-      var index = currentLayerIndex - 1
-      if (index < 0) index = slides.length - 1
-      setUrlHash('#'+slides[index].id)
-    }
-    var next = function () {
-      var index = currentLayerIndex + 1
-      if (index == slides.length) index = 0
-      setUrlHash('#'+slides[index].id)
-    }
-  
-    var toSlideByCurrentHash = function () {
-      setCurrentLayerById(window.location.hash.slice(1))
-      hideMenu()
-    }
-    // INIT
-    var loaderNode = document.getElementById('loader')
-    if (loaderNode) loaderNode.addEventListener('change', handleFileSelect, false)
-    document.onkeydown = handleKeyEvent
-    if (document.querySelector('output svg')) {
-      setupPresentation()
-    }
+      function handleKeyEvent (event) {
+        switch (event.key) {
+          case 'Backspace':
+            prev()
+            break;
+          case 'ArrowLeft':
+            prev()
+            break;
+          case 'ArrowUp':
+            prev()
+            break;
+          case 'ArrowRight':
+            next()
+            break;
+          case 'ArrowDown':
+            next()
+            break;
+          case ' ':
+            next()
+            break;
+          case 'Enter':
+            next()
+            break;
+          default:
+            console.log('no function for', event.key)
+        }
+      }
+      function toggleMenu () {
+        var menuNode = document.querySelector('.menu')
+        if (menuNode.classList.contains('closed')) {
+          menuNode.classList.remove('closed')
+        } else {
+          menuNode.classList.add('closed')
+        }
+      }
+      function hideMenu () {
+        var menuNode = document.querySelector('.menu')
+        if (!menuNode.classList.contains('closed')) {
+          menuNode.classList.add('closed')
+        }
+      }
+      // CONTROLLER FUNCTIONS
+      var setupPresentation = function () {
+        //requires svg file to be inserted
+        setBackgroundColor()
+        getSlides()
+        setSlideCounter()
+        setTableOfContents()
+        enableButtons()
+        //hide all layers
+        for (var i = 0, length = slides.length; i < length; i++) {
+          slides[i].style.display = 'none';
+        }
+        //set first layer as currentLayer
+        setCurrentLayerById(0);
+        //set listener for url hash changes
+        window.onhashchange = toSlideByCurrentHash;
+      }
+      var menu = function () {
+        toggleMenu()
+      }
+      var setUrlHash = function (hash) {
+        if (typeof hash === 'object') {
+          //is event
+          hash = hash.target.dataset.hash
+        }
+        window.location.replace(hash)
+      }
+      var prev = function () {
+        var index = currentLayerIndex - 1
+        if (index < 0) index = slides.length - 1
+        setUrlHash('#'+slides[index].id)
+      }
+      var next = function () {
+        var index = currentLayerIndex + 1
+        if (index == slides.length) index = 0
+        setUrlHash('#'+slides[index].id)
+      }
+
+      var toSlideByCurrentHash = function () {
+        setCurrentLayerById(window.location.hash.slice(1))
+        hideMenu()
+      }
+      // INIT
+      document.onkeydown = handleKeyEvent
+      if (document.querySelector('output svg')) {
+        setupPresentation()
+      }
+
+      riot.mount('*')
     </script>
   </body>
 </html>
