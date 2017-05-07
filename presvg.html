@@ -27,12 +27,15 @@
         transform: translate(-50%, -50%);
       }
 
-      .fixedLabel {
-        position: fixed;
-        z-index: 99;
+      .label {
         background-color: rgba(0, 0, 0, 0.5);
         color: white;
         padding: 0.5rem;
+      }
+
+      .fixed {
+        position: fixed;
+        z-index: 99;
       }
 
       nav {
@@ -63,7 +66,7 @@
         font-size: 2rem;
       }
 
-      .menu {
+      app-menu {
         position: fixed;
         left: 0;
         bottom: 0;
@@ -78,21 +81,21 @@
         transition: transform 200ms;
       }
 
-      .menu.closed {
+      app-menu.closed {
         transform: translateX(-100%);
       }
 
-      .menu ol {
+      app-menu ol {
         height: 90%;
         overflow-y: auto;
         margin: 0.5em;
       }
 
-      .menu li {
+      app-menu li {
         margin: 1em 0;
       }
 
-      .menu button {
+      app-menu button {
         position: absolute;
         top: 0;
         right: 0;
@@ -114,8 +117,8 @@
       }
     </style>
 
-    <span id="layerName" class="fixedLabel">preSvg - please choose your svg presentation</span>
-    <nav class="fixedLabel">
+    <span id="layerName" class="fixed label">preSvg - please choose your svg presentation</span>
+    <nav class="fixed label">
       <button disabled onclick="prev()">back</button>
       <button disabled onclick="next()">next</button>
       <div name="slideCounter">
@@ -128,17 +131,10 @@
     <output id="preSvg">
       <app-file-loader class="center"></app-file-loader>
     </output>
-    <div class="menu closed">
-      <ol id="toc"></ol>
-      <button class="fixedLabel"
-              onclick="menu()">
-        ▤ menu
-      </button>
-    </div>
+    <app-menu class="closed"><app-menu>
 
 
-
-
+    <!-- TAGS / VIEWS -->
     <script type="riot/tag">
       <app-file-loader>
         <input type="file" ref="loader"/>
@@ -150,9 +146,43 @@
       </app-file-loader>
     </script>
 
-    <script src="riot-3.3.2+compiler.min.js"></script>
+    <script type="riot/tag">
+      <app-menu>
+        <ol id="toc"></ol>
+        <button
+          class="label"
+          onclick="app.trigger('menu.toggle')">
+          ▤ menu
+        </button>
+
+        var tag = this
+        this.toggleMenu = function (event) {
+          if (tag.root.classList.contains('closed')) {
+            tag.root.classList.remove('closed')
+          } else {
+            tag.root.classList.add('closed')
+          }
+        }
+        function hideMenu () {
+          if (!tag.root.classList.contains('closed')) {
+            tag.root.classList.add('closed')
+          }
+        }
+
+        //event interface
+        app.on('menu.toggle', this.toggleMenu)
+        app.on('menu.hide', this.hideMenu)
+      </app-menu>
+    </script>
+
+
+    <!-- SCRIPTS -->
+    <script src="riot.min.js"></script>
 
     <script>
+      window.app = {}
+      riot.observable(app)
+
       var slides = [];
       var chapters = [];
       var currentLayerIndex = 0;
@@ -296,16 +326,8 @@
             console.log('no function for', event.key)
         }
       }
-      function toggleMenu () {
-        var menuNode = document.querySelector('.menu')
-        if (menuNode.classList.contains('closed')) {
-          menuNode.classList.remove('closed')
-        } else {
-          menuNode.classList.add('closed')
-        }
-      }
       function hideMenu () {
-        var menuNode = document.querySelector('.menu')
+        var menuNode = document.querySelector('app-menu')
         if (!menuNode.classList.contains('closed')) {
           menuNode.classList.add('closed')
         }
@@ -326,9 +348,6 @@
         setCurrentLayerById(0);
         //set listener for url hash changes
         window.onhashchange = toSlideByCurrentHash;
-      }
-      var menu = function () {
-        toggleMenu()
       }
       var setUrlHash = function (hash) {
         if (typeof hash === 'object') {
