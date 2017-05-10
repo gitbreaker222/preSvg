@@ -117,17 +117,7 @@
       }
     </style>
 
-    <span id="layerName" class="fixed label">preSvg - please choose your svg presentation</span>
-    <nav class="fixed label">
-      <button disabled onclick="prev()">back</button>
-      <button disabled onclick="next()">next</button>
-      <div name="slideCounter">
-        <span id="currentLayerIndex"></span>/<span id="slideCount"></span>
-      </div>
-      <svg viewBox="0 0 64 64" class="circle">
-        <circle r="25%" cy="50%" cx="50%"/>
-      </svg>
-    </nav>
+    <app-nav></app-nav>
     <output id="preSvg">
       <app-file-loader class="center"></app-file-loader>
     </output>
@@ -135,6 +125,25 @@
 
 
     <!-- TAGS / VIEWS -->
+    <script type="riot/tag">
+      <app-nav>
+        <span id="layerName" class="fixed label">preSvg - please choose your svg presentation</span>
+        <nav class="fixed label">
+          <button disabled onclick="prev()">back</button>
+          <button disabled onclick="next()">next</button>
+          <div name="slideCounter">
+            <span id="currentLayerIndex"></span>/
+            <span id="slideCount">{this.slideCount}</span>
+          </div>
+          <svg viewBox="0 0 64 64" class="circle">
+            <circle r="25%" cy="50%" cx="50%"/>
+          </svg>
+        </nav>
+
+        this.slideCount = app.presentation.slideCount
+      </app-nav>
+    </script>
+
     <script type="riot/tag">
       <app-file-loader>
         <input type="file" ref="loader"/>
@@ -182,88 +191,104 @@
     <script>
       window.app = {}
       riot.observable(app)
+    </script>
 
-      var slides = [];
-      var chapters = [];
-      var currentLayerIndex = 0;
-      var slideCount;
-      // SERVICE FUNCTIONS
-      function hideCurrentLayer () {
-        slides[currentLayerIndex].style.display = 'none'
-      }
-      function showCurrentLayer () {
-        slides[currentLayerIndex].style.display = 'inline'
-      }
-      function setCurrentLayerById (idOrIndex) {
-        hideCurrentLayer()
+    <script>
+    // TODO
+      // PRESENTATION MODEL
+      app.Presentation = function () {
+        this.slides = [] //svg layers
+        this.chapters = [],
+        this.currentLayerIndex = 0,
+        this.slideCount = null,
 
-        if (typeof idOrIndex == 'number') {
-          currentLayerIndex = idOrIndex
-        } else {
-          // expect id string - get index of slide with that id
-          currentLayerIndex = getIndexById(idOrIndex)
+        this.extractSlides = function () {
+          var name
+          var layers = document.querySelectorAll('output svg > g')
+
+          for (var i = 0, length = layers.length; i < length; i++) {
+            name = layers[i].attributes['inkscape:label'].value
+            switch (name[0]) {
+              case '+':
+                // show all + layers, don't add to slides. e.g. "+background"
+                layers[i].style.display = 'inline'
+                continue
+              case '.':
+                // hide all . layers, don't add to slides. e.g. ".layout"
+                layers[i].style.display = 'none'
+                continue
+              case '#':
+                // add # layers to chapters/toc. e.g. "#Overview"
+                name = name.slice(1).trim()
+                layers[i].attributes['inkscape:label'].value = name
+                this.saveAsChapter(layers[i])
+                break;
+            }
+            this.slides.push(layers[i])
+          }
         }
+        this.hideCurrentLayer = function () {
+          this.slides[this.currentLayerIndex].style.display = 'none'
+        },
+        this.showCurrentLayer = function () {
+          this.slides[this.currentLayerIndex].style.display = 'inline'
+        },
+        this.hideAllLayers = function () {
+          for (var i = 0, length = this.slides.length; i < length; i++) {
+            this.slides[i].style.display = 'none';
+          }
+        }
+        this.getIndexById = function (id) {
+          for (var i = 0, length = app.presentation.slides.length; i < length; i++) {
+            if (this.slides[i].id === id) return i
+          }
+          //nothing found
+          return console.error('no index for id ' + id)
+        },
+        this.setCurrentLayerById = function (idOrIndex) {
+          this.hideCurrentLayer()
 
-        var name = slides[currentLayerIndex].attributes['inkscape:label'].value
-        var percentage = (currentLayerIndex * 100) / slideCount
-        document.querySelector('#layerName').innerHTML = name
-        document.querySelector('#currentLayerIndex').innerHTML = currentLayerIndex + 1
-        document.querySelector('.circle circle').style.strokeDashoffset = -percentage
+          var index = idOrIndex
+          if (typeof idOrIndex == 'string') {
+            index = this.getIndexById(idOrIndex)
+          }
+          this.currentLayerIndex = index
 
-        showCurrentLayer()
+          //TODO -> UI update in riot way
+          var name = this.slides[index].attributes['inkscape:label'].value
+          var percentage = (index * 100) / this.slideCount
+          document.querySelector('#layerName').innerHTML = name
+          document.querySelector('#currentLayerIndex').innerHTML = index + 1 //start count from 1
+          document.querySelector('.circle circle').style.strokeDashoffset = -percentage
+
+          this.showCurrentLayer()
+        },
+        this.setSlideCounter = function () {
+          this.slideCount = this.slides.length
+          //TODO event
+        },
+        this.saveAsChapter = function (slide) {
+          var chapter = {
+            id: slide.id,
+            name: slide.attributes['inkscape:label'].value
+          }
+          this.chapters.push(chapter)
+        }
       }
+      app.presentation = new app.Presentation()
+    </script>
+
+    <script>
+      // service functions
       function setBackgroundColor () {
         var bodyNode = document.querySelector('body')
         var pageSettingsNode = document.querySelector('[pagecolor]')
         bodyNode.style.backgroundColor = pageSettingsNode.getAttribute('pagecolor')
       }
-      function setSlideCounter () {
-        slideCount = slides.length
-        document.querySelector('#slideCount').innerHTML = slideCount
-      }
-      function saveAsChapter (slide) {
-        var chapter = {
-          id: slide.id,
-          name: slide.attributes['inkscape:label'].value
-        }
-        chapters.push(chapter)
-      }
-      function getSlides () {
-        var name
-
-        var layers = document.querySelectorAll('output svg > g')
-
-        for (var i = 0, length = layers.length; i < length; i++) {
-          name = layers[i].attributes['inkscape:label'].value
-          switch (name[0]){
-            case '+':
-              // show all + layers, don't add to slides
-              layers[i].style.display = 'inline'
-              continue
-            case '.':
-              // hide all . layers, don't add to slides
-              layers[i].style.display = 'none'
-              continue
-            case '#':
-              // add chapter for all # layers
-              name = name.slice(1).trim()
-              layers[i].attributes['inkscape:label'].value = name
-              saveAsChapter(layers[i])
-              break;
-          }
-          slides.push(layers[i])
-        }
-      }
-      function getIndexById (id) {
-        for (var i = 0, length = slides.length; i < length; i++) {
-          if (slides[i].id === id) return i
-        }
-        return currentLayer
-      }
       function setTableOfContents () {
         var tocNode = document.querySelector('#toc')
         var item;
-        for (var i = 0, length = chapters.length; i < length; i++) {
+        for (var i = 0, length = app.presentation.chapters.length; i < length; i++) {
           //create list item
           item = document.createElement("li")
           //fill item with html
@@ -332,52 +357,53 @@
           menuNode.classList.add('closed')
         }
       }
-      // CONTROLLER FUNCTIONS
+    </script>
+
+    <script>
+      // APP CONTROLLER
       var setupPresentation = function () {
         //requires svg file to be inserted
         setBackgroundColor()
-        getSlides()
-        setSlideCounter()
+        app.presentation.extractSlides()
+        app.presentation.setSlideCounter()
         setTableOfContents()
         enableButtons()
-        //hide all layers
-        for (var i = 0, length = slides.length; i < length; i++) {
-          slides[i].style.display = 'none';
-        }
+        app.presentation.hideAllLayers()
         //set first layer as currentLayer
-        setCurrentLayerById(0);
+        app.presentation.setCurrentLayerById(0);
         //set listener for url hash changes
         window.onhashchange = toSlideByCurrentHash;
       }
       var setUrlHash = function (hash) {
-        if (typeof hash === 'object') {
-          //is event
+        if (typeof hash === 'object') { //is event
           hash = hash.target.dataset.hash
         }
         window.location.replace(hash)
       }
       var prev = function () {
-        var index = currentLayerIndex - 1
-        if (index < 0) index = slides.length - 1
-        setUrlHash('#'+slides[index].id)
+        var index = app.presentation.currentLayerIndex - 1
+        if (index < 0) index = app.presentation.slides.length - 1
+        setUrlHash('#' + app.presentation.slides[index].id)
       }
       var next = function () {
-        var index = currentLayerIndex + 1
-        if (index == slides.length) index = 0
-        setUrlHash('#'+slides[index].id)
+        var index = app.presentation.currentLayerIndex + 1
+        if (index == app.presentation.slides.length) index = 0
+        setUrlHash('#' + app.presentation.slides[index].id)
       }
 
       var toSlideByCurrentHash = function () {
-        setCurrentLayerById(window.location.hash.slice(1))
+        app.presentation.setCurrentLayerById(window.location.hash.slice(1))
         hideMenu()
       }
+
       // INIT
       document.onkeydown = handleKeyEvent
       if (document.querySelector('output svg')) {
+        // when opening a previously saved preSVG
         setupPresentation()
       }
-
       riot.mount('*')
+
     </script>
   </body>
 </html>
