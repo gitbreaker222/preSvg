@@ -140,7 +140,11 @@
           </svg>
         </nav>
 
-        this.slideCount = app.presentation.slideCount
+        function init () {
+          this.slideCount = app.presentation.slideCount
+        }
+
+        this.on('update', init)
       </app-nav>
     </script>
 
@@ -373,6 +377,7 @@
         app.presentation.setCurrentLayerById(0);
         //set listener for url hash changes
         window.onhashchange = toSlideByCurrentHash;
+        riot.update()
       }
       var setUrlHash = function (hash) {
         if (typeof hash === 'object') { //is event
