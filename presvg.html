@@ -512,6 +512,9 @@
         margin-bottom: 2rem;
         overflow: visible;
       }
+      svg:not(:root) {
+        overflow: visible;
+      }
 
       #layerName {
         left: 50%;
@@ -570,12 +573,31 @@
       }
     </style>
 
-    <app-nav></app-nav>
-    <output id="preSvg">
-      <app-file-loader class="center"></app-file-loader>
-    </output>
-    <app-menu class="closed"><app-menu>
+    <app></app>
 
+    <script type="riot/tag">
+      <app style={ styles }>
+        <app-nav></app-nav>
+        <output id="preSvg">
+          <app-file-loader class="center"></app-file-loader>
+        </output>
+        <app-menu class="closed"><app-menu>
+
+        this.styles = {
+          'background-color' : '#fff'
+        }
+
+        this.setBackgroundColor = function () {
+          var pageSettingsNode = document.querySelector('[pagecolor]')
+          this.styles['background-color'] = pageSettingsNode.getAttribute('pagecolor')
+        }
+
+        this.on('update', function () {
+          this.setBackgroundColor()
+        })
+
+      </app>
+    </script>
 
     <!-- TAGS / VIEWS -->
     <script type="riot/tag">
@@ -737,11 +759,6 @@
 
     <script>
       // service functions
-      function setBackgroundColor () {
-        var bodyNode = document.querySelector('body')
-        var pageSettingsNode = document.querySelector('[pagecolor]')
-        bodyNode.style.backgroundColor = pageSettingsNode.getAttribute('pagecolor')
-      }
       function setTableOfContents () {
         var tocNode = document.querySelector('#toc')
         var item;
@@ -820,7 +837,6 @@
       // APP CONTROLLER
       var setupPresentation = function () {
         //requires svg file to be inserted
-        setBackgroundColor()
         app.presentation.extractSlides()
         app.presentation.setSlideCounter()
         setTableOfContents()
