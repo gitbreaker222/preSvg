@@ -682,20 +682,18 @@
       app.ConfigStore = function () {
         var that = this
         this.data = {
-          showTitle: true
+          showTitle: true,
+          showNavigation: true,
         }
 
-        function toggleShowTitle () {
+        this.toggleShowTitle = function () {
           that.data.showTitle = !that.data.showTitle
           app.trigger('config:update')
         }
-
-        this.set = function (config, value) {
-          that.data[config] = value
-          app.trigger('config:update');
+        this.toggleShowNavigation = function () {
+          that.data.showNavigation = !that.data.showNavigation
+          app.trigger('config:update')
         }
-
-        app.on('config:toggleShowTitle', toggleShowTitle)
       }
       app.config = new app.ConfigStore();
     </script>
@@ -813,7 +811,7 @@
 
       var toSlideByCurrentHash = function () {
         app.presentation.setCurrentLayerById(window.location.hash.slice(1))
-        hideMenu()
+        app.trigger('menu:hide')
       }
     </script>
 
@@ -851,7 +849,7 @@
           class="fixed label">
           { layerName() }
         </span>
-        <nav class="fixed label">
+        <nav if={ isShowNav() } class="fixed label">
           <button disabled onclick="prev()">↙</button>
           <button disabled onclick="next()">↗</button>
           <div name="slideCounter">
@@ -872,9 +870,11 @@
         this.layerName = function () {
           return app.presentation.currentLayerName || 'preSvg - please choose your svg presentation'
         }
-
         this.showsTitle = function () {
           return tag.config.showTitle
+        }
+        this.isShowNav = function () {
+          return tag.config.showNavigation
         }
 
         this.updateProgressIndicator = function () {
@@ -884,8 +884,8 @@
           tag.refs.circle.style.strokeDashoffset = 100 - percentage
         }
 
-        this.on('update', function () {
-          tag.updateProgressIndicator()
+        this.on('updated', function () {
+          if (tag.config.showNavigation) tag.updateProgressIndicator()
         })
 
         //event interface
@@ -912,9 +912,15 @@
           <div class="settings">
             <label>
               <input type="checkbox"
-                checked={ config.data.showTitle }
+                checked={ config.showTitle }
                 onclick={ toggleShowTitle }>
               Show title
+            </label>
+            <label>
+              <input type="checkbox"
+                checked={ config.showNavigation }
+                onclick={ toggleNavigation }>
+              Show navigation
             </label>
           </div>
         </div>
@@ -925,11 +931,9 @@
         </button>
 
         var tag = this
-        this.config = app.config
-
-        this.toggleShowTitle = function () {
-          app.trigger('config:toggleShowTitle')
-        }
+        this.config = app.config.data
+        this.toggleShowTitle = app.config.toggleShowTitle
+        this.toggleNavigation = app.config.toggleShowNavigation
 
         this.toggleMenu = function (event) {
           if (tag.root.classList.contains('closed')) {
@@ -947,7 +951,7 @@
         //event interface
         app.on('config:update', tag.update)
         app.on('menu:toggle', tag.toggleMenu)
-        app.on('menu.hide', tag.hideMenu)
+        app.on('menu:hide', tag.hideMenu)
       </app-menu>
     </script>
 
