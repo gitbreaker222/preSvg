@@ -586,6 +586,7 @@
         stroke-dashoffset: 100;
         transform-origin: center;
         transform: rotate(-90deg);
+        transition: stroke-dashoffset 200ms;
       }
     </style>
 
@@ -712,12 +713,6 @@
           tocNode.appendChild(item)
         }
       }
-      function enableButtons () {
-        var buttons = document.querySelectorAll('nav button')
-        for (var i = 0, length = buttons.length; i < length; i++) {
-          buttons[i].disabled = false
-        }
-      }
       function handleFileSelect(evt) {
         //https://www.html5rocks.com/de/tutorials/file/dndfiles/
         var file = evt.target.files[0]; // FileList object
@@ -769,12 +764,6 @@
             console.log('no function for', event.key)
         }
       }
-      function hideMenu () {
-        var menuNode = document.querySelector('app-menu')
-        if (!menuNode.classList.contains('closed')) {
-          menuNode.classList.add('closed')
-        }
-      }
     </script>
 
     <!-- APP CONTROLLER -->
@@ -784,12 +773,12 @@
         app.presentation.extractSlides()
         app.presentation.setSlideCounter()
         setTableOfContents()
-        enableButtons()
         app.presentation.hideAllLayers()
         //set first layer as currentLayer
         app.presentation.setCurrentLayerById(0);
         //set listener for url hash changes
         window.onhashchange = toSlideByCurrentHash;
+        app.trigger('presentation:setup')
         riot.update()
       }
       var setUrlHash = function (hash) {
@@ -884,6 +873,13 @@
           tag.refs.circle.style.strokeDashoffset = 100 - percentage
         }
 
+        function enableButtons () {
+          var buttons = tag.root.querySelectorAll('nav button')
+          buttons.forEach(function(button){
+            button.disabled = false
+          })
+        }
+
         this.on('updated', function () {
           if (tag.config.showNavigation) tag.updateProgressIndicator()
         })
@@ -891,6 +887,7 @@
         //event interface
         app.on('config:update', tag.update)
         app.on('presentation:update', tag.update)
+        app.on('presentation:setup', enableButtons)
       </app-nav>
     </script>
 
