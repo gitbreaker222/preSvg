@@ -579,9 +579,9 @@
       nav svg circle {
         fill: none;
         stroke: #ffffff;
-        stroke-width: 32%;
+        stroke-width: 11%;
         stroke-dasharray: 100;
-        stroke-dashoffset: 0;
+        stroke-dashoffset: 100;
       }
     </style>
 
@@ -657,10 +657,10 @@
 
           //TODO -> UI update in riot way
           var name = this.slides[index].attributes['inkscape:label'].value
-          var percentage = (index * 100) / this.slideCount
+          var percentage = ((index + 1) * 100) / this.slideCount
           document.querySelector('#layerName').innerHTML = name
           document.querySelector('#currentLayerIndex').innerHTML = index + 1 //start count from 1
-          document.querySelector('.circle circle').style.strokeDashoffset = -percentage
+          document.querySelector('.circle circle').style.strokeDashoffset = 100 - percentage
 
           this.showCurrentLayer()
         },
@@ -905,7 +905,7 @@
         <button
           class="label"
           onclick="app.trigger('menu:toggle')">
-          ◧
+          ◧⇄
         </button>
 
         var tag = this
@@ -937,6 +937,7 @@
 
     <!-- INIT -->
     <script>
+      setUrlHash('#')
       document.onkeydown = handleKeyEvent
       if (document.querySelector('output svg')) {
         // when opening a previously saved preSVG
