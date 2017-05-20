@@ -493,8 +493,8 @@
 
       nav {
         right: 0;
-        min-width: 8em;
         max-width: 50vw;
+        height: 1.3em;
         display: flex;
         flex-flow: row wrap;
         justify-content: space-around;
@@ -572,16 +572,20 @@
       }
 
       nav svg.circle {
-        height: 1em;
-        transform: rotate(-90deg);
+        height: 2em;
+        position: absolute;
+        right: -15px;
+        top: -5px;
       }
 
       nav svg circle {
         fill: none;
         stroke: #ffffff;
-        stroke-width: 11%;
+        stroke-width: 2px;
         stroke-dasharray: 100;
         stroke-dashoffset: 100;
+        transform-origin: center;
+        transform: rotate(-90deg);
       }
     </style>
 
@@ -601,6 +605,7 @@
         this.slides = [] //svg layers
         this.chapters = [],
         this.currentLayerIndex = 0,
+        this.currentLayerName = '',
         this.slideCount = null,
 
         this.extractSlides = function () {
@@ -654,14 +659,8 @@
             index = this.getIndexById(idOrIndex)
           }
           this.currentLayerIndex = index
-
-          //TODO -> UI update in riot way
-          var name = this.slides[index].attributes['inkscape:label'].value
-          var percentage = ((index + 1) * 100) / this.slideCount
-          document.querySelector('#layerName').innerHTML = name
-          document.querySelector('#currentLayerIndex').innerHTML = index + 1 //start count from 1
-          document.querySelector('.circle circle').style.strokeDashoffset = 100 - percentage
-
+          this.currentLayerName = this.slides[index].attributes['inkscape:label'].value
+          app.trigger('presentation:update')
           this.showCurrentLayer()
         },
         this.setSlideCounter = function () {
@@ -850,18 +849,16 @@
           if={ showsTitle() }
           id="layerName"
           class="fixed label">
-          preSvg - please choose your svg presentation
+          { layerName() }
         </span>
         <nav class="fixed label">
           <button disabled onclick="prev()">↙</button>
           <button disabled onclick="next()">↗</button>
           <div name="slideCounter">
-            <span id="currentLayerIndex"></span>
-            /
-            <span id="slideCount">{ presentation.slideCount }</span>
+            <span id="currentLayerIndex">{ currentLayerIndex() }</span>
           </div>
           <svg viewBox="0 0 64 64" class="circle">
-            <circle r="25%" cy="50%" cx="50%"/>
+            <circle r="25%" cy="50%" cx="50%" ref="circle" />
           </svg>
         </nav>
 
@@ -869,12 +866,31 @@
         this.config = app.config.data
         this.presentation = app.presentation
 
+        this.currentLayerIndex = function () {
+          return this.presentation.currentLayerIndex + 1
+        }
+        this.layerName = function () {
+          return app.presentation.currentLayerName || 'preSvg - please choose your svg presentation'
+        }
+
         this.showsTitle = function () {
           return tag.config.showTitle
         }
 
+        this.updateProgressIndicator = function () {
+          var slideIndex = tag.presentation.currentLayerIndex + 1
+          var slideCount = tag.presentation.slideCount
+          var percentage = ((slideIndex) * 100) / slideCount
+          tag.refs.circle.style.strokeDashoffset = 100 - percentage
+        }
+
+        this.on('update', function () {
+          tag.updateProgressIndicator()
+        })
+
         //event interface
         app.on('config:update', tag.update)
+        app.on('presentation:update', tag.update)
       </app-nav>
     </script>
 
