@@ -754,6 +754,9 @@
           case 'Enter':
             next()
             break;
+          case 'm':
+            app.trigger('menu:toggle')
+            break;
           default:
             console.log('no function for', event.key)
         }
