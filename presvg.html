@@ -505,6 +505,11 @@
         margin: 0 0.2em;
       }
 
+      .slideCounter {
+        text-shadow: black 1px 1px 1px;
+        z-index: 2;
+      }
+
       output svg {
         position: absolute;
         left: 50%;
@@ -673,7 +678,7 @@
         },
         this.setSlideCounter = function () {
           this.slideCount = this.slides.length
-          //TODO event
+          app.trigger('presentation:update')
         },
         this.saveAsChapter = function (slide) {
           var chapter = {
@@ -945,7 +950,6 @@
           }
         }
         this.setUrlHash = function (event) {
-          //call the global function
           setUrlHash(event.target.dataset.hash)
         }
 
