@@ -542,17 +542,24 @@
         transform: translateX(-100%);
       }
 
-      app-menu > .div {
+      app-menu h2 {
+        font-size: 1em;
+        font-weight: normal;
+        border-bottom: 1px solid white;
+      }
+      app-menu h2:first-child {
+        margin-top: 0;
+      }
+
+      app-menu > div {
         height: 100%;
-        overflow: auto;
         overflow: auto;
       }
 
       app-menu ol {
-        height: 85vh;
+        max-height: 65vh;
         overflow-y: auto;
         margin: 0;
-        border-left: 1px solid white
       }
 
       app-menu li {
@@ -702,6 +709,7 @@
     <!-- LOGIC / SERVICES -->
     <script>
       function setTableOfContents () {
+        //TODO refactor me
         var tocNode = document.querySelector('#toc')
         var item;
         for (var i = 0, length = app.presentation.chapters.length; i < length; i++) {
@@ -905,21 +913,21 @@
     <script type="riot/tag">
       <app-menu>
         <div>
+          <h2>Table of contents</h2>
           <ol id="toc"></ol>
-          <div class="settings">
-            <label>
-              <input type="checkbox"
-                checked={ config.showTitle }
-                onclick={ toggleShowTitle }>
-              Show title
-            </label>
-            <label>
-              <input type="checkbox"
-                checked={ config.showNavigation }
-                onclick={ toggleNavigation }>
-              Show navigation
-            </label>
-          </div>
+          <h2>Settings</h2>
+          <label>
+            <input type="checkbox"
+              checked={ config.showTitle }
+              onclick={ toggleShowTitle }>
+            Show title
+          </label>
+          <label>
+            <input type="checkbox"
+              checked={ config.showNavigation }
+              onclick={ toggleNavigation }>
+            Show navigation
+          </label>
         </div>
         <button
           class="label"
