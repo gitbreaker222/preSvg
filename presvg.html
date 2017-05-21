@@ -708,19 +708,6 @@
 
     <!-- LOGIC / SERVICES -->
     <script>
-      function setTableOfContents () {
-        //TODO refactor me
-        var tocNode = document.querySelector('#toc')
-        var item;
-        for (var i = 0, length = app.presentation.chapters.length; i < length; i++) {
-          //create list item
-          item = document.createElement("li")
-          //fill item with html
-          item.innerHTML = '<span class="ref" data-hash="#'+chapters[i].id+'" onclick="setUrlHash(event)">'+chapters[i].name+'</span>'
-          //append list item
-          tocNode.appendChild(item)
-        }
-      }
       function handleFileSelect(evt) {
         //https://www.html5rocks.com/de/tutorials/file/dndfiles/
         var file = evt.target.files[0]; // FileList object
@@ -780,7 +767,6 @@
         //requires svg file to be inserted
         app.presentation.extractSlides()
         app.presentation.setSlideCounter()
-        setTableOfContents()
         app.presentation.hideAllLayers()
         //set first layer as currentLayer
         app.presentation.setCurrentLayerById(0);
@@ -914,7 +900,15 @@
       <app-menu>
         <div>
           <h2>Table of contents</h2>
-          <ol id="toc"></ol>
+          <ol id="toc">
+            <li each={ presentation.chapters }>
+              <span class="ref"
+                    data-hash={ '#' + id }
+                    onclick="setUrlHash(event)">
+                { name }
+              </span>
+            </li>
+          </ol>
           <h2>Settings</h2>
           <label>
             <input type="checkbox"
@@ -939,6 +933,7 @@
         this.config = app.config.data
         this.toggleShowTitle = app.config.toggleShowTitle
         this.toggleNavigation = app.config.toggleShowNavigation
+        this.presentation = app.presentation
 
         this.toggleMenu = function (event) {
           if (tag.root.classList.contains('closed')) {
