@@ -776,9 +776,6 @@
         riot.update()
       }
       var setUrlHash = function (hash) {
-        if (typeof hash === 'object') { //is event
-          hash = hash.target.dataset.hash
-        }
         window.location.replace(hash)
       }
       var prev = function () {
@@ -904,7 +901,7 @@
             <li each={ presentation.chapters }>
               <span class="ref"
                     data-hash={ '#' + id }
-                    onclick="setUrlHash(event)">
+                    onclick={ setUrlHash }>
                 { name }
               </span>
             </li>
@@ -946,6 +943,10 @@
           if (!tag.root.classList.contains('closed')) {
             tag.root.classList.add('closed')
           }
+        }
+        this.setUrlHash = function (event) {
+          //call the global function
+          setUrlHash(event.target.dataset.hash)
         }
 
         //event interface
