@@ -967,12 +967,15 @@
     <!-- INIT -->
     <script>
       setUrlHash('#')
-      document.onkeydown = handleKeyEvent
       if (document.querySelector('output svg')) {
-        // when opening a previously saved preSVG
+        // when opening a previously saved preSvg
+        var svg = document.querySelector('output').innerHTML
+        riot.mount('*') //will reset output
+        document.querySelector('output').innerHTML = svg
         setupPresentation()
+      } else {
+        riot.mount('*')
       }
-      riot.mount('*')
     </script>
   </body>
 </html>
