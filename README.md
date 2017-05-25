@@ -5,7 +5,7 @@ presentationable vector graphics created with inkscape
 
 ## introduction
 
-[introduction svg](./introduction/introduction.svg)
+![introduction svg](./introduction/introduction.svg)
 
 ## how to create svg-slides
 
