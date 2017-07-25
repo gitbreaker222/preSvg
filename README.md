@@ -1,4 +1,4 @@
-# preSvg
+# preSvg (discontinued)
 presentationable vector graphics created with inkscape
 
 ## [try live version](https://cdn.rawgit.com/gitbreaker222/preSvg/caa4bbad/presvg.html)
